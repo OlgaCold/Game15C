@@ -9,7 +9,7 @@ Rectangle {
 
     anchors.horizontalCenter: parent.horizontalCenter
 
-    //signal clicked
+    signal clicked
 
     width: 150
     height: 70
@@ -20,7 +20,7 @@ Rectangle {
     MouseArea {
             id: mouseArea
             anchors.fill: parent
-            //onClicked: root.clicked()
+            onClicked: root.clicked()
     }
 
     Text {

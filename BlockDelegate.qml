@@ -7,7 +7,7 @@ Item {
 
     property alias oldP: mouseArea.oldPosition
 
-    //signal clicked
+    signal clicked
 
     Block {
 
@@ -29,10 +29,10 @@ Item {
 
         anchors.fill: parent
 
-        /*onPressed: {
+        onPressed: {
 
             oldPosition = index
             root.clicked();
-        }*/
+        }
     }
 }

@@ -1,4 +1,5 @@
 #include "gamemodel.h"
+#include <iostream>
 
 GameModel::GameModel(QObject *parent)
     : QAbstractListModel(parent), gridSize(GRID_SIZE)
@@ -46,6 +47,88 @@ QHash<int, QByteArray> GameModel::roleNames() const
     blocks[IsVoidRole] = "isvoid";
     return blocks;
 }
+
+bool GameModel::move(int oldP)
+{
+    int newP;
+
+    if(GameModel::findVoidCellId(oldP) != -1) {
+
+        newP = findVoidCellId(oldP);
+
+        int min = oldP < newP ? oldP : newP;
+        int max = oldP < newP ? newP : oldP;
+
+        emit beginMoveRows(QModelIndex(), min, min, QModelIndex(), max + 1);//max + 1
+        m_data.move(min, max);
+        emit endMoveRows();
+
+        if(max - 1 != min) {
+            emit beginMoveRows(QModelIndex(), max - 1, max - 1, QModelIndex(), min);//max - 1
+            m_data.move(max - 1, min);
+            emit endMoveRows();
+        }
+
+        if(GameModel::checkWin()){
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool GameModel::checkWin()
+{
+    int gridSqrdSize = gridSize * gridSize;
+
+    for(int i = 0; i < gridSqrdSize; i++) {
+        if(i != m_data.at(i)->getNumber() - 1){
+            return false;
+        }
+    }
+    return true;
+}
+
+int GameModel::findVoidCellId(int oldPos)
+{
+    int newPos = -1;
+    int gridSqrdSize = gridSize * gridSize;
+    int tempL = oldPos - 1;
+    int tempR = oldPos + 1;
+    int tempD = oldPos - gridSize;
+    int tempU = oldPos + gridSize;
+
+    if(tempL > -1 && tempL < gridSqrdSize && m_data.at(tempL)->getNumber() == gridSqrdSize) {
+        newPos = tempL;
+    }
+    if(tempR > -1 && tempR < gridSqrdSize && m_data.at(tempR)->getNumber() == gridSqrdSize) {
+        newPos = tempR;
+    }
+    if(tempD > -1 && tempD < gridSqrdSize && m_data.at(tempD)->getNumber() == gridSqrdSize) {
+        newPos = tempD;
+    }
+    if(tempU > -1 && tempU < gridSqrdSize && m_data.at(tempU)->getNumber() == gridSqrdSize) {
+        newPos = tempU;
+    }
+
+    return newPos;
+}
+
+/*void GameModel::shuffle()
+{
+    int temporaryValue1, temporaryValue2;
+    int gridSqrdSize = gridSize * gridSize;
+
+    for(var ind = gridSqrdSize - 1; ind > 0; ind--){
+        int obj = Math.floor(Math.random() * (ind + 1))
+                temporaryValue1 = array.get(ind).gridId
+                temporaryValue2 = array.get(ind).isVoid
+                array.setProperty(ind, "gridId", array.get(obj).gridId)
+                array.setProperty(ind, "isVoid", array.get(obj).isVoid)
+                array.get(obj).gridId = temporaryValue1
+                array.get(obj).isVoid = temporaryValue2
+    }
+}*/
 
 /*bool GameModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {

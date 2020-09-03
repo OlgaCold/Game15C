@@ -42,7 +42,11 @@ ApplicationWindow {
             width: parent.width/items.gridSize
             height: width
 
-            //onClicked: Game15.move(items, oldP)
+            onClicked: {
+                if(items.move(oldP)){
+                    messageDialog.open()
+                }
+            }
         }
     }
 
@@ -54,7 +58,7 @@ ApplicationWindow {
 
         text: "<b>Mix</b>";
         textColor: "#8b4513"
-        //onClicked: Game15.mix(items)
+        //onClicked: //Game15.mix(items)
 
     }
 
