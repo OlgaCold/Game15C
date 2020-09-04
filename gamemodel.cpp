@@ -118,8 +118,8 @@ bool GameModel::checkIsValid()
     int e = gridSize;
     int gridSqrdSize = gridSize * gridSize;
 
-    for(var i = 0; i < gridSqrdSize - 1; i++){
-        for(var j = i + 1; j < gridSqrdSize - 1; j++){
+    for(int i = 0; i < gridSqrdSize - 1; i++){
+        for(int j = i + 1; j < gridSqrdSize - 1; j++){
             if(m_data.at(i)->getNumber() > m_data.at(j)->getNumber()){
                 summ += 1;
             }
@@ -132,7 +132,7 @@ bool GameModel::checkIsValid()
 
 void GameModel::shuffle()
 {
-    int temporaryValue1, temporaryValue2;
+    int temporaryValue;
     int gridSqrdSize = gridSize * gridSize;
 
     int min;
@@ -140,10 +140,10 @@ void GameModel::shuffle()
 
     emit beginResetModel();
 
-    for(var ind = gridSqrdSize - 1; ind > 0; ind--){
-        int obj = ceil(rand() % (ind + 1));
-        min = temporaryValue1 < temporaryValue2 ? temporaryValue1 : temporaryValue2;
-        max = temporaryValue1 < temporaryValue2 ? temporaryValue2 : temporaryValue1;
+    for(int ind = gridSqrdSize - 1; ind > 0; ind--){
+        int temporaryValue = ceil(rand() % (ind + 1));//ind?
+        min = ind < temporaryValue ? ind : temporaryValue;
+        max = ind < temporaryValue ? temporaryValue : ind;
 
         m_data.move(min, max);
         if(max - 1 != min) {
