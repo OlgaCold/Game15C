@@ -58,7 +58,7 @@ ApplicationWindow {
 
         text: "<b>Mix</b>";
         textColor: "#8b4513"
-        //onClicked: //Game15.mix(items)
+        onClicked: items.mix()
 
     }
 

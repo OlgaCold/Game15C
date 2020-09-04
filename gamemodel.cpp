@@ -1,13 +1,8 @@
 #include "gamemodel.h"
-#include <iostream>
 
 GameModel::GameModel(QObject *parent)
     : QAbstractListModel(parent), gridSize(GRID_SIZE)
 {
-    //m_roleNames[DisplayRole] = "number";
-    //m_roleNames[IsVoidRole] = "isvoid";
-
-
     for(int i = 0; i < gridSize*gridSize; i++){
         m_data.append(new Block(i + 1, false));
     }
@@ -16,12 +11,10 @@ GameModel::GameModel(QObject *parent)
 
 int GameModel::rowCount(const QModelIndex &parent) const
 {
-    // For list models only the root node (an invalid parent) should return the list's size. For all
-    // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
     if (parent.isValid())
         return 0;
 
-    return m_data.count();// FIXME: Implement me!
+    return m_data.count();
 }
 
 QVariant GameModel::data(const QModelIndex &index, int role) const
@@ -46,6 +39,12 @@ QHash<int, QByteArray> GameModel::roleNames() const
     blocks[DisplayRole] = "display";
     blocks[IsVoidRole] = "isvoid";
     return blocks;
+}
+
+void GameModel::mix()
+{
+    do{ GameModel::shuffle(); }
+    while( !GameModel::checkIsValid() );
 }
 
 bool GameModel::move(int oldP)
@@ -73,7 +72,6 @@ bool GameModel::move(int oldP)
             return true;
         }
     }
-
     return false;
 }
 
@@ -114,21 +112,46 @@ int GameModel::findVoidCellId(int oldPos)
     return newPos;
 }
 
-/*void GameModel::shuffle()
+bool GameModel::checkIsValid()
+{
+    int summ = 0;
+    int e = gridSize;
+    int gridSqrdSize = gridSize * gridSize;
+
+    for(var i = 0; i < gridSqrdSize - 1; i++){
+        for(var j = i + 1; j < gridSqrdSize - 1; j++){
+            if(m_data.at(i)->getNumber() > m_data.at(j)->getNumber()){
+                summ += 1;
+            }
+        }
+    }
+    summ += e;
+
+    return !(summ % 2);
+}
+
+void GameModel::shuffle()
 {
     int temporaryValue1, temporaryValue2;
     int gridSqrdSize = gridSize * gridSize;
 
+    int min;
+    int max;
+
+    emit beginResetModel();
+
     for(var ind = gridSqrdSize - 1; ind > 0; ind--){
-        int obj = Math.floor(Math.random() * (ind + 1))
-                temporaryValue1 = array.get(ind).gridId
-                temporaryValue2 = array.get(ind).isVoid
-                array.setProperty(ind, "gridId", array.get(obj).gridId)
-                array.setProperty(ind, "isVoid", array.get(obj).isVoid)
-                array.get(obj).gridId = temporaryValue1
-                array.get(obj).isVoid = temporaryValue2
+        int obj = ceil(rand() % (ind + 1));
+        min = temporaryValue1 < temporaryValue2 ? temporaryValue1 : temporaryValue2;
+        max = temporaryValue1 < temporaryValue2 ? temporaryValue2 : temporaryValue1;
+
+        m_data.move(min, max);
+        if(max - 1 != min) {
+            m_data.move(max - 1, min);
+        }
     }
-}*/
+    emit endResetModel();
+}
 
 /*bool GameModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
